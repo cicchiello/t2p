@@ -1,0 +1,52 @@
+#!/bin/bash
+
+user=`whoami`
+if [ "$user" != "root" ]
+then
+    echo 'Sorry, this shell script must be run as root; perhaps you meant to use "sudo"?'
+    exit
+fi
+
+echo "Hello!  Please be patient while everything is installed..."
+echo ""
+
+echo ""
+echo ""
+echo "Performing apt update"
+apt-get update
+
+echo ""
+echo ""
+echo "Performing apt upgrade"
+apt-get -y upgrade
+
+echo ""
+echo ""
+echo "Installing cups"
+apt-get install -y cups
+
+
+echo ""
+echo ""
+echo "Adding user pi to group lpadmin"
+usermod -a -G lpadmin pi
+
+
+echo ""
+echo ""
+echo "Configurin CUPs"
+if [ ! -f "/etc/cups/cupsd.conf.pristine" ]
+then
+   cp /etc/cups/cupsd.conf /etc/cups/cupsd.conf.pristine
+fi
+
+cat /etc/cups/cupsd.conf.pristine \
+   | sed 's/Listen localhost:631/Port 631/g' \
+   | sed 's?</Location>?  Allow @local\'$'\n</Location>?g' \
+   > /etc/cups/cupsd.conf
+
+#iptables -A INPUT -i wlan0 -p tcp -m tcp --dport 631 -j ACCEPT
+#iptables -A INPUT -i wlan0 -p udp -m udp --dport 631 -j ACCEPT
+
+
+echo "All Done!"

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+user=`whoami`
+if [ "$user" != "root" ]
+then
+    echo 'Sorry, this shell script must be run as root; perhaps you meant to use "sudo"?'
+    exit
+fi
+
+echo "Hello!  Please be patient while most everything is uninstalled..."
+echo ""
+
+if [ -f "/etc/cups/cupsd.conf.pristine" ]
+then
+   cp /etc/cups/cupsd.conf /etc/cups/cupsd.conf.pristine
+fi
+
+echo "All Done!"
+
