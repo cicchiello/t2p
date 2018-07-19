@@ -1,0 +1,45 @@
+#!/bin/bash
+
+if [ "${1}" == "" ]
+then
+    echo "Usage: "${0}" <hostname>"
+    exit -1
+fi
+
+user=`whoami`
+if [ "$user" != "root" ]
+then
+    echo 'Sorry, this shell script must be run as root; perhaps you meant to use "sudo"?'
+    exit
+fi
+
+echo "Seems you're allowed in!"
+echo ""
+
+hostname=${1}
+echo "Changing hostname to ${hostname}"
+
+if [ ! -f "/etc/hosts.pristine" ]
+then
+    cp /etc/hosts /etc/hosts.pristine
+    
+    cat /etc/hosts | sed "s/^\(127.0.1.1\t\)raspberrypi/\1${hostname}/g" \
+    	> /tmp/hosts
+    cp /tmp/hosts /etc/hosts
+    
+    cp /etc/hostname /etc/hostname.pristine
+    
+    cat /etc/hostname | sed "s/raspberrypi/${hostname}/g" \
+        > /tmp/hostname
+    cp /tmp/hostname /etc/hostname
+    
+    echo "INFO: Success; hostname changed to ${hostname}"
+    echo ""
+    echo "INFO: Rebooting..."
+    /etc/init.d/hostname.sh
+
+    reboot now
+    
+else
+    echo "WARNING: hostname not changed; it had previously been changed"
+fi

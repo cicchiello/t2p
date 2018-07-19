@@ -9,6 +9,25 @@ fi
 
 log=/home/pi/install.log
 
+
+gid=$(cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2)
+echo "befor GID: "${gid}
+while [ "${gid}" -ne "$(echo ${gid} | sed 's/^0//g')" ]
+do
+    gid=$(echo ${gid} | sed 's/^0//g')
+done
+echo "after GID: "${gid}
+newhostname="t2p_${gid}"
+if [ "${newhostname}" -ne "$(hostname)" ]
+then
+    echo "Setting hostname to: ${newhostname}"
+    #./sethostname.bsh ${newhostname}
+
+    echo "Setting password to: hanelinus"
+    echo -e "hanelinus\nhanelinus" | passwd pi
+fi
+
+
 echo "" &>> log
 echo "" &>> log
 echo "" &>> log
