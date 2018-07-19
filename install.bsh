@@ -11,7 +11,7 @@ echo "Hello!  Please be patient while everything is installed..."
 echo ""
 
 cd /home/pi
-data &>> clone.log
+date &>> clone.log
 sudo -H -u pi /bin/bash -c 'git clone https://github.com/cicchiello/t2p.git' &>> clone.log
 
 cd t2p
