@@ -79,6 +79,8 @@ cat /etc/cups/cupsd.conf.pristine \
 #iptables -A INPUT -i wlan0 -p udp -m udp --dport 631 -j ACCEPT
 
 
+/etc/init.d/cups restart
+
 echo "Done install_worker.bsh" &>> log
 date &>> log
 
