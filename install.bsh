@@ -10,6 +10,12 @@ fi
 echo "Hello!  Please be patient while everything is installed..."
 echo ""
 
+if [ -f "/etc/init.d/resize2fs_once" ]
+then
+    echo "Resizing micro sd partition to use all avialable space"
+    /etc/init.d/resize2fs_once start
+fi
+
 cd /home/pi
 date &>> clone.log
 sudo -H -u pi /bin/bash -c 'git clone https://github.com/cicchiello/t2p.git' &>> clone.log
