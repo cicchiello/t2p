@@ -13,14 +13,13 @@ The username/password are the standard for new Raspbian installs: pi/raspberry (
 
 If you find that you wish to start with stock Raspbian, the same web site will have the latest images, but you'll also need to wrestle with stuff like getting connected to a network, installing "git" and a few other miscellaneous things.
 
-## After your micro sd card is ready
+## After your micro sd card is ready -- on to the Touch-2-Print server setup
 
-Once you have your micro sd, you're ready to install all the t2p-specific code.
-
-Before starting, please setup a phone to serve as a hotspot for communicating with the print server.  After installation, you will need to do a bit of printer setup (at least add a printer and choose the general properties).  A hotspot is the chosen mechanism so that Raspberry Pi does not actually have to join your corporate network.  The installation package is expecting the hotspot to be available as follows: 
+Before powering up the Raspberry Pi, please setup a phone WiFi hotspot for communicating with the print server later.  After installation, you will need to do a bit of printer setup (at least add a printer and choose the general properties).  A hotspot is the chosen mechanism so that Raspberry Pi does not actually have to remain on your corporate network.  The installation package is expecting the hotspot to be available as follows: 
 > SSID: HANELINUS
 > password: 0123456789
 
+Now, put the sd card in the Raspbery Pi, plug in your network ethernet cable, and plug in USB power.  It will take about 30 seconds before it will respond.
 
 First, login to your Raspberry Pi from your favorite shell or terminal tool (e.g. PuTTY):
 > ssh pi@\<its-ip-address>
