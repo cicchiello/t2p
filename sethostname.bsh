@@ -32,7 +32,7 @@ then
     cat /etc/hostname | sed "s/raspberrypi/${hostname}/g" \
         > /tmp/hostname
     cp /tmp/hostname /etc/hostname
-    /etc/init.d/hostname.sh
+    hostname ${hostname}
     
     echo "INFO: Success; hostname changed to ${hostname}"
 else
