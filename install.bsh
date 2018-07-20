@@ -8,7 +8,6 @@ then
 fi
 
 echo "Hello!  Please be patient while everything is installed..."
-echo ""
 
 if [ -f "/etc/init.d/resize2fs_once" ]
 then

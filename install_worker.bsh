@@ -83,3 +83,8 @@ date &>> ${log}
 
 
 echo "All Done!"
+
+
+echo ""
+echo "INFO: Rebooting..."
+#reboot now
