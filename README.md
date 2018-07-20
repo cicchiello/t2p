@@ -30,8 +30,8 @@ At the first command prompt:
 You'll now have a single file at /home/pi/install.bsh to run:
 > sudo /bin/bash -c ". ./install.bsh"
 
-# Now, get a cup of coffee -- it will take about 5 minutes
+Now, get a cup of coffee -- it will take about 10 minutes
 
-# You'll need to take note of the LAN address(es) that will be made available for administration.
+You'll need to take note of the LAN address(es) that will be made available for administration.
 
 # Finally, move on to [Printer Administration](https://github.com/cicchiello/t2p/raw/master/PrinterAdmin.md) to setup your printer, using the urls provided at the end of the install script.

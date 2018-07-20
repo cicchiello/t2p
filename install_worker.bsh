@@ -24,7 +24,7 @@ newname="t2p_${gid}"
 if [ "t2p_${gid}" != "$(hostname)" ]
 then
     echo "Setting hostname to: t2p_${gid}"
-    ${dir}/sethostname.bsh "t2p_${gid}"
+    ${dir}/sethostname.bsh "t2p_${gid}" &>> ${log}
 
     echo "Setting password to: hanelinus"
     echo -e "hanelinus\nhanelinus" | passwd pi &>> ${log}
@@ -98,6 +98,60 @@ echo ""
 echo "Restarting CUPs"
 /etc/init.d/cups restart &>> ${log}
 
+if [[ "0" != "$(grep -c 'console=[a-zA-Z0-9_]*,[a-zA-Z0-9_]*' /boot/cmdline.txt)" ]]
+then
+    cat /boot/cmdline.txt \
+	| sed 's/ console=[a-zA-Z0-9_]*,[a-zA-Z0-9_]* / /g' \
+	> /tmp/cmdline.txt
+    echo ""
+    echo "Removing kernel console activation from /boot/cmdline.txt"
+    echo "Removing kernel console activation from /boot/cmdline.txt:" &>> ${log}
+    cat /tmp/cmdline.txt &>> ${log}
+    cp /tmp/cmdline.txt /boot/cmdline.txt
+fi
+
+has_enable_uart=$(cat /boot/config.txt | grep -c enable_uart)
+if [[ "${has_enable_uart}" = "0" ]]
+then
+    # then just need to append
+    echo "enable_uart=1" >> /boot/config.txt
+
+    # log it
+    echo ""
+    echo "Enabling UART"
+    echo "Enabling UART" &>> ${log}
+    echo "Here's the resulting /boot/config.txt:" &>> ${log}
+    cat /boot/config.txt &>> ${log}
+else
+    has_enable_uart0=$(cat /boot/config.txt | grep enable_uart | grep -c "0")
+    if [[ "${has_enable_uart0}" = "1" ]]
+    then
+	# have to change it to 1
+	cat /boot/config.txt \
+	    | sed 's/enable_uart[ ]*=[ ]0/enable_uart=1/g' \
+	    > /tmp/config.txt
+	cp /tmp/config.txt /boot/config.txt
+	
+	# log it
+	echo ""
+	echo "Enabling UART"
+	echo "Enabling UART" &>> ${log}
+	echo "Here's the resulting /boot/config.txt:" &>> ${log}
+	cat /boot/config.txt &>> ${log}
+    else
+	echo ""
+	echo "UART is already enabled in /boot/config.txt"
+	echo "UART is already enabled in /boot/config.txt" &>> ${log}
+    fi
+fi
+
+
+echo ""
+echo "Install nfc support"
+echo "Install nfc support" &>> ${log}
+${dir}/build_nfc.bsh &>> ${log}
+
+
 echo "Done install_worker.bsh" &>> ${log}
 date &>> ${log}
 
@@ -119,4 +173,4 @@ date &>> ${log}
 
 echo ""
 echo "INFO: Rebooting..."
-reboot now
+#reboot now
