@@ -13,21 +13,22 @@ chown pi:pi ${log}
 
 
 gid=$(cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2)
-echo "befor GID: "${gid}
-while [ "${gid}" -ne "$(echo ${gid} | sed 's/^0//g')" ]
+#echo "befor GID: ${gid}"
+while [ "${gid}" != "$(echo ${gid} | sed 's/^0//g')" ]
 do
     gid=$(echo ${gid} | sed 's/^0//g')
 done
-echo "after GID: "${gid}
-newhostname="t2p_${gid}"
-if [ "${newhostname}" -ne "$(hostname)" ]
+#echo "after GID: ${gid}"
+newname="t2p_${gid}"
+if [ "t2p_${gid}" != "$(hostname)" ]
 then
-    echo "Setting hostname to: ${newhostname}"
-    #./sethostname.bsh ${newhostname}
+    echo "Setting hostname to: t2p_${gid}"
+    ./sethostname.bsh "t2p_${gid}"
 
     echo "Setting password to: hanelinus"
     echo -e "hanelinus\nhanelinus" | passwd pi
 fi
+
 
 
 echo "" &>> ${log}
