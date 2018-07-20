@@ -26,7 +26,7 @@ then
     ./sethostname.bsh "t2p_${gid}"
 
     echo "Setting password to: hanelinus"
-    echo -e "hanelinus\nhanelinus" | passwd pi
+    echo -e "hanelinus\nhanelinus" | passwd pi &>> ${log}
 fi
 
 
@@ -82,9 +82,21 @@ echo "Done install_worker.bsh" &>> ${log}
 date &>> ${log}
 
 
-echo "All Done!"
+echo "Setups Done!"
+echo ""
+echo "After the following reboot, access the CUPS administration app on any browser on the same LAN"
+echo "After the following reboot, access the CUPS administration app on any browser on the same LAN" &>> ${log}
+echo "It will be available at url(s):"
+echo "It will be available at url(s):" &>> ${log}
+for f in $(ifconfig | grep netmask | grep -v "127.0.0" | awk '{print $2}')
+do
+    echo "http://${f}:631"
+    echo "http://${f}:631" &>> ${log}
+done
 
+echo "Done installation" &>> ${log}
+date &>> ${log}
 
 echo ""
 echo "INFO: Rebooting..."
-#reboot now
+reboot now
