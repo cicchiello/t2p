@@ -8,6 +8,8 @@ then
 fi
 
 log=/home/pi/install.log
+echo "" &>> ${log}
+chown pi:pi ${log}
 
 
 gid=$(cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2)
@@ -28,41 +30,34 @@ then
 fi
 
 
-echo "" &>> log
-echo "" &>> log
-echo "" &>> log
-echo "" &>> log
-echo "" &>> log
-echo "New install invocation" &>> log
-date &>> log
+echo "" &>> ${log}
+echo "New install invocation" &>> ${log}
+date &>> ${log}
 
 
-echo "Hello!  Please be patient while everything is installed..."
-echo ""
-
-echo ""
 echo ""
 echo "Performing apt update"
-apt-get update &>> log
+apt-get update &>> ${log}
 
-echo ""
 echo ""
 echo "Performing apt upgrade"
-apt-get -y upgrade &>> log
+apt-get -y upgrade &>> ${log}
 
-echo ""
 echo ""
 echo "Installing cups"
-apt-get install -y cups &>> log
+apt-get install -y cups &>> ${log}
 
 
 echo ""
+echo "Installing lpr"
+apt-get install -y lpr &>> ${log}
+
+
 echo ""
 echo "Adding user pi to group lpadmin"
-usermod -a -G lpadmin pi &>> log
+usermod -a -G lpadmin pi &>> ${log}
 
 
-echo ""
 echo ""
 echo "Configurin CUPs"
 if [ ! -f "/etc/cups/cupsd.conf.pristine" ]
@@ -78,11 +73,12 @@ cat /etc/cups/cupsd.conf.pristine \
 #iptables -A INPUT -i wlan0 -p tcp -m tcp --dport 631 -j ACCEPT
 #iptables -A INPUT -i wlan0 -p udp -m udp --dport 631 -j ACCEPT
 
+echo ""
+echo "Restarting CUPs"
+/etc/init.d/cups restart &>> ${log}
 
-/etc/init.d/cups restart
-
-echo "Done install_worker.bsh" &>> log
-date &>> log
+echo "Done install_worker.bsh" &>> ${log}
+date &>> ${log}
 
 
 echo "All Done!"
