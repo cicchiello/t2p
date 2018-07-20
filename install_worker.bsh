@@ -23,10 +23,13 @@ done
 newname="t2p_${gid}"
 if [ "t2p_${gid}" != "$(hostname)" ]
 then
+    echo ""
     echo "Setting hostname to: t2p_${gid}"
+    echo "Setting hostname to: t2p_${gid}" &>> ${log}
     ${dir}/sethostname.bsh "t2p_${gid}" &>> ${log}
 
     echo "Setting password to: hanelinus"
+    echo "Setting password to: hanelinus" &>> ${log}
     echo -e "hanelinus\nhanelinus" | passwd pi &>> ${log}
 fi
 
@@ -39,24 +42,29 @@ date &>> ${log}
 
 echo ""
 echo "Performing apt update"
+echo "Performing apt update" &>> ${log}
 apt-get update &>> ${log}
 
 echo ""
 echo "Performing apt upgrade"
+echo "Performing apt upgrade" &>> ${log}
 apt-get -y upgrade &>> ${log}
 
 echo ""
 echo "Installing cups"
+echo "Installing cups" &>> ${log}
 apt-get install -y cups &>> ${log}
 
 
 echo ""
 echo "Installing lpr"
+echo "Installing lpr" &>> ${log}
 apt-get install -y lpr &>> ${log}
 
 
 echo ""
 echo "Adding user pi to group lpadmin"
+echo "Adding user pi to group lpadmin" &>> ${log}
 usermod -a -G lpadmin pi &>> ${log}
 
 
@@ -115,6 +123,7 @@ if [[ "${has_enable_uart}" = "0" ]]
 then
     # then just need to append
     echo "enable_uart=1" >> /boot/config.txt
+    echo "" >> /boot/config.txt
 
     # log it
     echo ""
