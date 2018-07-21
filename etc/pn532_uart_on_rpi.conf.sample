@@ -2,5 +2,16 @@
 ## Note: to use UART port on R-Pi, you have to disable linux serial console:
 ##   http://learn.adafruit.com/adafruit-nfc-rfid-on-raspberry-pi/freeing-uart-on-the-pi
 name = "PN532 board via UART"
-connstring = pn532_uart:/dev/ttyAMA0
+
+#RPI 3 uses ttyAMA0 for Bluetooth; disabling bluetooth by adding
+# "dtoverlay=pi3-disable-bt" to /boot/config.txt seems to work, but I
+# prefer this solution better.  On RPI3, the serial port is renamed
+# ttyS0
+#
+# On the earlier RPI's, you probably need to rever to ttyAMA0, but haven't
+# checked yet
+#
+#connstring = pn532_uart:/dev/ttyAMA0
+connstring = pn532_uart:/dev/ttyS0
+
 allow_intrusive_scan = true

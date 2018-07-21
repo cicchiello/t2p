@@ -122,6 +122,8 @@ has_enable_uart=$(cat /boot/config.txt | grep -c enable_uart)
 if [[ "${has_enable_uart}" = "0" ]]
 then
     # then just need to append
+    echo "" >> /boot/config.txt
+    echo "# Enable application use of UART" >> /boot/config.txt
     echo "enable_uart=1" >> /boot/config.txt
     echo "" >> /boot/config.txt
 
@@ -182,4 +184,4 @@ date &>> ${log}
 
 echo ""
 echo "INFO: Rebooting..."
-#reboot now
+reboot now

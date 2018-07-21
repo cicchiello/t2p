@@ -11,12 +11,12 @@ cd /home/pi
 mkdir libnfc
 cd libnfc
 wget https://github.com/nfc-tools/libnfc/releases/download/libnfc-1.7.1/libnfc-1.7.1.tar.bz2
-tar -xvjf libnfc-1.7.0.tar.bz2
+tar -xvjf libnfc-1.7.1.tar.bz2
 
-cd libnfc-1.7.0
+cd libnfc-1.7.1
 mkdir /etc/nfc
 mkdir /etc/nfc/devices.d
-cp /home/pi/t2a/etc/pn532_uart_on_rpi.conf.sample /etc/nfc/devices.d/pn532_uart_on_rpi.conf
+cp /home/pi/t2p/etc/pn532_uart_on_rpi.conf.sample /etc/nfc/devices.d/pn532_uart_on_rpi.conf
 
 apt-get install -y autoconf
 apt-get install -y libtool

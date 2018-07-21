@@ -15,7 +15,7 @@ date &>> clone.log
 if [ -f "/etc/init.d/resize2fs_once" ]
 then
     echo ""
-    echo "Resizing micro sd partition to maximize avialable space"
+    echo "Resizing micro sd partition to maximize available space"
     /etc/init.d/resize2fs_once start &>> clone.log
 fi
 
