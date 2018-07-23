@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import nfc
-
 import nfc.snep
 
 class DefaultSnepServer(nfc.snep.SnepServer):
@@ -11,6 +10,11 @@ class DefaultSnepServer(nfc.snep.SnepServer):
     def put(self, ndef_message):
         print "client has put an NDEF message"
         print ndef_message.pretty()
+        dev = os.open("/dev/ttyUSB0",O_WRONLY)
+        l = os.write(dev,ndef_message)
+        if l not len(ndef_message):
+            print "ERROR: Wrong number of bytes written:",l,len(ndef_message)
+        os.close(dev)
         return nfc.snep.Success
 
 def startup(llc):
