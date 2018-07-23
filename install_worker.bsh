@@ -157,10 +157,22 @@ else
 fi
 
 
+#echo ""
+#echo "Install nfc support"
+#echo "Install nfc support" &>> ${log}
+#${dir}/build_nfc.bsh &>> ${log}
+
+
 echo ""
-echo "Install nfc support"
-echo "Install nfc support" &>> ${log}
-${dir}/build_nfc.bsh &>> ${log}
+echo "Installing nfcpy"
+apt-get install -y python-pip
+pip install -U nfcpy
+
+
+# add a line to: /usr/local/lib/python2.7/dist-packages/nfc/llcp/__init__.py
+# import errno
+# immediately before: 
+# from .socket import Socket                                         # noqa: F401
 
 
 echo "Done install_worker.bsh" &>> ${log}
@@ -178,6 +190,7 @@ do
     echo "http://${f}:631"
     echo "http://${f}:631" &>> ${log}
 done
+
 
 echo "Done installation" &>> ${log}
 date &>> ${log}
