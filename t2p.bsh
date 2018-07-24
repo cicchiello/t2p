@@ -1,0 +1,12 @@
+#!/bin/bash
+
+user=`whoami`
+if [ "$user" == "root" ]
+then
+    stty -F "/dev/ttyUSB0" parenb cs7
+fi
+
+while :
+do
+    ./t2p.py
+done

@@ -3,6 +3,32 @@
 import os
 import nfc
 import nfc.snep
+import threading
+from collections import deque
+import time
+
+PRINTER = "/dev/ttyUSB0"
+
+done = False
+q = deque()
+
+class PrintMgr(threading.Thread):
+    def run(self):
+        while not done:
+            time.sleep(0.5)
+            try:
+                filename = q.popleft()
+
+                #print "simulating print of filename:",filename
+                file = open(filename, "r")
+                dev = os.open(PRINTER, os.O_WRONLY)
+                os.write(dev, file.read())
+                os.close(dev)
+                file.close()
+                print "done print of",filename
+                
+            except:
+                pass
 
 class DefaultSnepServer(nfc.snep.SnepServer):
     def __init__(self, llc):
@@ -10,12 +36,14 @@ class DefaultSnepServer(nfc.snep.SnepServer):
 
     def put(self, ndef_message):
         print "client has put an NDEF message"
-        print ndef_message.pretty()
-        dev = os.open("/dev/ttyUSB0",os.O_WRONLY)
-        l = os.write(dev,ndef_message.pretty())
-        if l != len(ndef_message.pretty()):
-            print "ERROR: Wrong number of bytes written:",l,len(ndef_message)
-        os.close(dev)
+        msg = ndef_message._records[0]._data.decode("utf-8")
+        
+        msgname = "/tmp/msg.txt"
+        outf = open(msgname,"w")
+        outf.write(msg)
+        outf.close()
+        q.append(msgname)
+        
         return nfc.snep.Success
 
 def startup(llc):
@@ -29,8 +57,22 @@ def connected(llc):
     print 'Connected'
     return True
 
-my_snep_server = None
 clf = nfc.ContactlessFrontend('tty:S0:pn532')
-while True: #Replace with something that doesn't make it impossible to exit
-    clf.connect(llcp={'on-startup': startup, 'on-connect': connected})
-    print 'Disconnect'
+q.append("/home/pi/t2p/misc/bagtagpectab7-1-15.txt")
+
+t = PrintMgr()
+t.start()
+
+my_snep_server = None
+
+clf.connect(llcp={'on-startup': startup, 'on-connect': connected})
+clf.close()
+print 'Disconnect'
+time.sleep(0.5)
+
+print "waiting"
+while len(q) > 0:
+    time.sleep(2)
+    print len(q)
+
+done = True
