@@ -65,10 +65,19 @@ t.start()
 
 my_snep_server = None
 
-clf.connect(llcp={'on-startup': startup, 'on-connect': connected})
-clf.close()
-print 'Disconnect'
-time.sleep(0.5)
+tries = 0
+retry = True
+while retry and (tries < 3):
+    retry = False
+    try: 
+        clf.connect(llcp={'on-startup': startup, 'on-connect': connected})
+        clf.close()
+        print 'Disconnect'
+        time.sleep(0.5)
+    except:
+        tries = tries + 1
+        time.sleep(2)
+        retry = True
 
 print "waiting"
 while len(q) > 0:
