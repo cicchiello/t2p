@@ -180,7 +180,7 @@ then
     cat /usr/local/lib/python2.7/dist-packages/nfc/llcp/__init__.py.pristine \
        | sed 's?from [.]socket import?import errno\'$'\nfrom .socket import?g' \
        > /usr/local/lib/python2.7/dist-packages/nfc/llcp/__init__.py
-
+fi
     
 echo "Done install_worker.bsh" &>> ${log}
 date &>> ${log}
