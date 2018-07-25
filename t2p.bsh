@@ -6,6 +6,8 @@ echo "t2p.bsh running as "${user} >> /home/pi/t2p.log 2>&1
 echo "pwd: "$(pwd) >> /home/pi/t2p.log 2>&1
 date >> /home/pi/t2p.log 2>&1
 
+sleep 15
+
 echo "Checking for update file..." >> /home/pi/t2p.log 2>&1
 update_url="https://github.com/cicchiello/t2p/raw/master/update_0.10.bsh"
 wget --directory-prefix=/home/pi ${update_url} >> /home/pi/t2p.log 2>&1
