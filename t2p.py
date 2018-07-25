@@ -58,7 +58,9 @@ def connected(llc):
     return True
 
 clf = nfc.ContactlessFrontend('tty:S0:pn532')
-q.append("/home/pi/t2p/misc/bagtagpectab7-1-15.txt")
+
+# we're going to assume that the batgatpect file has already been loaded
+#q.append("/home/pi/t2p/misc/bagtagpectab7-1-15.txt")
 
 t = PrintMgr()
 t.start()

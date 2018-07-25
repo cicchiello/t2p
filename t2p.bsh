@@ -1,29 +1,43 @@
 #!/bin/bash
 
 user=`whoami`
-if [ "$user" == "root" ]
-then
-    stty -F "/dev/ttyUSB0" parenb cs7
-fi
 
 echo "t2p.bsh running as "${user} >> /home/pi/t2p.log 2>&1
 echo "pwd: "$(pwd) >> /home/pi/t2p.log 2>&1
 date >> /home/pi/t2p.log 2>&1
 
 echo "Checking for update file..." >> /home/pi/t2p.log 2>&1
-update_url="https://github.com/cicchiello/t2p/raw/master/update_0.8.bsh"
+update_url="https://github.com/cicchiello/t2p/raw/master/update_0.9.bsh"
 wget --directory-prefix=/home/pi ${update_url} >> /home/pi/t2p.log 2>&1
 
-if [ -f "/home/pi/update_0.8.bsh" ]
+if [ -f "/home/pi/update_0.9.bsh" ]
 then
     echo "Update file found; executing it, then rebooting" >> /home/pi/t2p.log 2>&1
-    chmod a+x /home/pi/update_0.8.bsh
-    /home/pi/update_0.8.bsh
+    chmod a+x /home/pi/update_0.9.bsh
+    /home/pi/update_0.9.bsh
 else
     echo "No update file found" >> /home/pi/t2p.log 2>&1
+
+    if [ -f "/home/pi/first_run_0.8" ]
+    then
+	echo "To: j.cicchiello@ieee.org" > /tmp/boot_email.txt
+	echo "From: jcicchiello@ptd.net" >> /tmp/boot_email.txt
+	echo "Subject: t2p/t2p.bsh version 0.8 has been started for the first time!" >> /tmp/boot_email.txt
+	echo "" >> /tmp/boot_email.txt
+	echo $(date) >> /tmp/boot_email.txt
+	echo "" >> /tmp/boot_email.txt
+	ssmtp j.cicchiello@gmail.com < /tmp/boot_email.txt
+
+	touch /home/pi/first_run_0.8
+    fi
 fi
 
 while :
 do
+    if [ "$user" == "root" ]
+    then
+	stty -F "/dev/ttyUSB0" 9600 parenb -parodd cs7
+    fi
+    
     /home/pi/t2p/t2p.py |& tee -a /home/pi/t2p.log
 done

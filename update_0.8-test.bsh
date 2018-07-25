@@ -1,0 +1,25 @@
+#!/bin/bash
+
+echo "To: j.cicchiello@ieee.org" > /tmp/email.txt
+echo "From: jcicchiello@ptd.net" >> /tmp/email.txt
+echo "Subject: t2p/update_0.8.bsh has been invoked!" >> /tmp/email.txt
+echo "" >> /tmp/email.txt
+echo $(date) >> /tmp/email.txt
+echo "" >> /tmp/email.txt
+echo "*******/home/pi/t2p.log contents to date:" >> /tmp/email.txt
+cat /home/pi/t2p.log >> /tmp/email.txt
+echo "*******end of /home/pi/t2p.log" >> /tmp/email.txt
+echo "" >> /tmp/email.txt
+echo "" >> /tmp/email.txt
+ssmtp j.cicchiello@gmail.com < /tmp/email.txt
+
+cd /home/pi
+mv /home/pi/t2p.log home/pi/t2p-pre-0.8.log
+touch /home/pi/t2p.log
+
+cd /home/pi/t2p
+git pull
+
+#reboot now
+
+
