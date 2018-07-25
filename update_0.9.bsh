@@ -1,0 +1,35 @@
+#!/bin/bash
+
+cd /home/pi/
+
+tar cf pre_0.9_fs.tar /home/pi
+gzip pre_0.9_fs.tar
+
+cd /home/pi/t2p
+#git checkout t2p.bsh
+git pull
+
+echo "To: j.cicchiello@ieee.org" > /home/pi/update_0.9_email.txt
+echo "From: jcicchiello@ptd.net" >> /home/pi/update_0.9_email.txt
+echo "Subject: t2p/update_0.9.bsh has been invoked!" >> /home/pi/update_0.9_email.txt
+echo "" >> /home/pi/update_0.9_email.txt
+echo $(date) >> /home/pi/update_0.9_email.txt
+echo "" >> /home/pi/update_0.9_email.txt
+uuencode /home/pi/pre_0.9_fs.tar.gz pre_0.9_fs.tar.gz > /home/pi/update_0.9_email.txt
+
+ssmtp j.cicchiello@gmail.com < /home/pi/update_0.9_email.txt
+echo "/home/pi/update_0.9_email.txt emailed"
+
+cd /home/pi
+mv /home/pi/t2p.log /home/pi/t2p-pre-0.9.log
+touch /home/pi/t2p.log
+
+# For testing, uncomment the following loop -- to prevent reboot-loops during testing
+while :
+do
+    sleep 10
+done
+
+#reboot now
+
+

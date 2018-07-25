@@ -6,6 +6,7 @@ import nfc.snep
 import threading
 from collections import deque
 import time
+import subprocess
 
 PRINTER = "/dev/ttyUSB0"
 
@@ -22,6 +23,11 @@ class PrintMgr(threading.Thread):
                 #print "simulating print of filename:",filename
                 print "printing:",filename
                 file = open(filename, "r")
+
+                print "setting comm on",PRINTER
+                stat = subprocess.call(["stty", "-F", PRINTER, "9600", "parenb", "-parodd", "cs7"])
+                print "stat:",stat
+
                 dev = os.open(PRINTER, os.O_WRONLY)
                 os.write(dev, file.read())
                 os.close(dev)
