@@ -29,6 +29,13 @@ cd /home/pi/t2p
 #git checkout t2p.bsh
 git pull
 
+
+
+while :
+do
+    sleep 10
+done
+
 #reboot now
 
 
