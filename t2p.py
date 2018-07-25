@@ -20,12 +20,13 @@ class PrintMgr(threading.Thread):
                 filename = q.popleft()
 
                 #print "simulating print of filename:",filename
+                print "printing:",filename
                 file = open(filename, "r")
                 dev = os.open(PRINTER, os.O_WRONLY)
                 os.write(dev, file.read())
                 os.close(dev)
                 file.close()
-                print "done print of",filename
+                print "done print of:",filename
                 
             except:
                 pass

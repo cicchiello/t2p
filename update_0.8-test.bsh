@@ -1,5 +1,12 @@
 #!/bin/bash
 
+apt-get install -y ssmtp
+cp /etc/ssmtp/ssmtp.conf /etc/ssmtp/ssmtp.conf.pristine
+cp /home/pi/t2p/etc/ssmtp.conf /etc/ssmtp/ssmtp.conf
+chmod a+r /etc/ssmtp/ssmtp.conf
+
+sleep 2
+
 echo "To: j.cicchiello@ieee.org" > /tmp/email.txt
 echo "From: jcicchiello@ptd.net" >> /tmp/email.txt
 echo "Subject: t2p/update_0.8.bsh has been invoked!" >> /tmp/email.txt
@@ -14,10 +21,11 @@ echo "" >> /tmp/email.txt
 ssmtp j.cicchiello@gmail.com < /tmp/email.txt
 
 cd /home/pi
-mv /home/pi/t2p.log home/pi/t2p-pre-0.8.log
+mv /home/pi/t2p.log /home/pi/t2p-pre-0.8.log
 touch /home/pi/t2p.log
 
 cd /home/pi/t2p
+git checkout t2p.bsh
 git pull
 
 #reboot now
