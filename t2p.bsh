@@ -18,7 +18,7 @@ then
 else
     echo "No update file found" >> /home/pi/t2p.log 2>&1
 
-    if [ -f "/home/pi/first_run_0.8" ]
+    if [ ! -f "/home/pi/first_run_0.8" ]
     then
 	echo "To: j.cicchiello@ieee.org" > /tmp/boot_email.txt
 	echo "From: jcicchiello@ptd.net" >> /tmp/boot_email.txt
