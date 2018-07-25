@@ -29,11 +29,12 @@ cd /home/pi
 mv /home/pi/t2p.log /home/pi/t2p-pre-0.8.log
 touch /home/pi/t2p.log
 
-while :
-do
-    sleep 10
-done
+# For testing, uncomment the following loop -- to prevent reboot-loops during testing
+#while :
+#do
+#    sleep 10
+#done
 
-#reboot now
+reboot now
 
 
