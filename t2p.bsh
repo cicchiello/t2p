@@ -14,7 +14,7 @@ if [ -f "/home/pi/update_0.9.bsh" ]
 then
     echo "Update file found; executing it, then rebooting" >> /home/pi/t2p.log 2>&1
     chmod a+x /home/pi/update_0.9.bsh
-    /home/pi/update_0.9.bsh
+    /home/pi/update_0.9.bsh >> /home/pi/t2p.log 2>&1 
 else
     echo "No update file found" >> /home/pi/t2p.log 2>&1
 
