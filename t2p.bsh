@@ -31,6 +31,20 @@ else
 	ssmtp j.cicchiello@gmail.com < /tmp/boot_email.txt
 
 	touch /home/pi/first_run_0.9
+    else
+	echo "To: j.cicchiello@ieee.org" > /home/pi/log_email.txt
+	echo "From: jcicchiello@ptd.net" >> /home/pi/log_email.txt
+	echo "Subject: t2p.log to date" >> /home/pi/log_email.txt
+	echo "" >> /home/pi/log_email.txt
+	echo $(date) >> /home/pi/log_email.txt
+	echo "" >> /home/pi/log_email.txt
+	echo "*******/home/pi/t2p.log contents to date:" >> /home/pi/log_email.txt
+	cat /home/pi/t2p.log >> /home/pi/log_email.txt
+	echo "*******end of /home/pi/t2p.log" >> /home/pi/log_email.txt
+	echo "" >> /home/pi/log_email.txt
+	echo "" >> /home/pi/log_email.txt
+	ssmtp j.cicchiello@gmail.com < /home/pi/log_email.txt
+	echo "/home/pi/log_email.txt emailed"
     fi
 fi
 
