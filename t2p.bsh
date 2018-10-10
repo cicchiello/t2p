@@ -2,23 +2,25 @@
 
 user=`whoami`
 
-echo "t2p.bsh running as "${user} >> /home/pi/t2p.log 2>&1
-echo "pwd: "$(pwd) >> /home/pi/t2p.log 2>&1
-date >> /home/pi/t2p.log 2>&1
+echo "INFO|$(date +'%F %R.%S')|t2p.bsh running as ${user}" >> /home/pi/t2p.log 2>&1
+cd /home/pi/t2p
+echo "INFO|$(date +'%F %R.%S')|pwd: $(pwd)" >> /home/pi/t2p.log 2>&1
 
-sleep 15
+echo "INFO|$(date +'%F %R.%S')|Sleeping for 30s while services initialize" >> /home/pi/t2p.log 2>&1
+# Note: 15s wasn't enough; with 15s, the wget a few lines down actually takes minutes to determine the file's not there
+sleep 30
 
-echo "Checking for update file..." >> /home/pi/t2p.log 2>&1
+echo "INFO|$(date +'%F %R.%S')|Checking for update file..." >> /home/pi/t2p.log 2>&1
 update_url="https://github.com/cicchiello/t2p/raw/master/update_0.10.bsh"
 wget --directory-prefix=/home/pi ${update_url} >> /home/pi/t2p.log 2>&1
 
 if [ -f "/home/pi/update_0.10.bsh" ]
 then
-    echo "Update file found; executing it, then rebooting" >> /home/pi/t2p.log 2>&1
+    echo "INFO|$(date +'%F %R.%S')|Update file found; executing it, then rebooting" >> /home/pi/t2p.log 2>&1
     chmod a+x /home/pi/update_0.10.bsh
     /home/pi/update_0.10.bsh >> /home/pi/t2p.log 2>&1 
 else
-    echo "No update file found" >> /home/pi/t2p.log 2>&1
+    echo "INFO|$(date +'%F %R.%S')|No update file found" >> /home/pi/t2p.log 2>&1
 
     if [ ! -f "/home/pi/first_run_0.9" ]
     then
@@ -31,6 +33,7 @@ else
 	ssmtp j.cicchiello@gmail.com < /tmp/boot_email.txt
 
 	touch /home/pi/first_run_0.9
+	echo "INFO|$(date +'%F %R.%S')|Sent inital start email message" >> /home/pi/t2p.log 2>&1
     else
 	echo "To: j.cicchiello@ieee.org" > /home/pi/log_email.txt
 	echo "From: jcicchiello@ptd.net" >> /home/pi/log_email.txt
@@ -44,7 +47,8 @@ else
 	echo "" >> /home/pi/log_email.txt
 	echo "" >> /home/pi/log_email.txt
 	ssmtp j.cicchiello@gmail.com < /home/pi/log_email.txt
-	echo "/home/pi/log_email.txt emailed"
+	
+	echo "INFO|$(date +'%F %R.%S')|/home/pi/log_email.txt emailed" >> /home/pi/t2p.log 2>&1
     fi
 fi
 
@@ -52,8 +56,13 @@ while :
 do
     if [ "${user}" = "root" ]
     then
+	echo "INFO|$(date +'%F %R.%S')|reseting serial port comm params" >> /home/pi/t2p.log 2>&1
 	stty -F "/dev/ttyUSB0" 9600 parenb -parodd cs7
+	echo "INFO|$(date +'%F %R.%S')|done reseting serial port comm params" >> /home/pi/t2p.log 2>&1
+    else
+	echo "WARNING|$(date +'%F %R.%S')|can't reset serial port because user is ${user}" >> /home/pi/t2p.log 2>&1
     fi
     
+    echo "INFO|$(date +'%F %R.%S')|Starting /home/pi/t2p/t2p.py" >> /home/pi/t2p.log 2>&1
     /home/pi/t2p/t2p.py |& tee -a /home/pi/t2p.log
 done

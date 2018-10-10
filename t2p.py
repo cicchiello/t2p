@@ -6,12 +6,27 @@ import nfc.snep
 import threading
 from collections import deque
 import time
+import datetime
 import subprocess
 
 PRINTER = "/dev/ttyUSB0"
 
+#import logging
+#log.info("Begin")
+#logging.info("Begin") # silences a possible error from the nfc libraries
+import logging
+logging.basicConfig()
+logger = logging.getLogger('logger')
+
 done = False
 q = deque()
+
+
+def tstamp(level):
+    ts = time.time()
+    st = datetime.datetime.fromtimestamp(ts).strftime(level+'|'+'%Y-%m-%d %H:%M:%S|')
+    return st
+
 
 class PrintMgr(threading.Thread):
     def run(self):
@@ -20,19 +35,19 @@ class PrintMgr(threading.Thread):
             try:
                 filename = q.popleft()
 
-                #print "simulating print of filename:",filename
-                print "printing:",filename
+                #print "%sSimulating print of filename: %s" % (tstamp('DEBUG'), filename)
+                print "%sprinting: %s" % (tstamp('INFO'), filename)
                 file = open(filename, "r")
 
-                print "setting comm on",PRINTER
+                print "%sSetting comm on %s" % (tstamp('INFO'),PRINTER)
                 stat = subprocess.call(["stty", "-F", PRINTER, "9600", "parenb", "-parodd", "cs7"])
-                print "stat:",stat
+                print "%sStat: %s" % (tstamp('INFO'), stat)
 
                 dev = os.open(PRINTER, os.O_WRONLY)
                 os.write(dev, file.read())
                 os.close(dev)
                 file.close()
-                print "done print of:",filename
+                print "%sDone print of: %s" (tstamp('INFO'), filename)
                 
             except:
                 pass
@@ -42,7 +57,7 @@ class DefaultSnepServer(nfc.snep.SnepServer):
         nfc.snep.SnepServer.__init__(self, llc, "urn:nfc:sn:snep", 1024 * 1024)
 
     def put(self, ndef_message):
-        print "client has put an NDEF message"
+        print "%sClient has put an NDEF message" % tstamp('INFO')
         msg = ndef_message._records[0]._data.decode("utf-8")
         
         msgname = "/tmp/msg.txt"
@@ -56,12 +71,12 @@ class DefaultSnepServer(nfc.snep.SnepServer):
 def startup(llc):
     global my_snep_server
     my_snep_server = DefaultSnepServer(llc)
-    print 'Startup'
+    print '%sOnStartup' % tstamp('INFO')
     return llc
 
 def connected(llc):
     my_snep_server.start()
-    print 'Connected'
+    print '%sOnConnected' % tstamp('INFO')
     return True
 
 clf = nfc.ContactlessFrontend('tty:S0:pn532')
@@ -76,21 +91,26 @@ my_snep_server = None
 
 tries = 0
 retry = True
+
+print "%sBefore while loop" % tstamp('DEBUG')
+
 while retry and (tries < 3):
     retry = False
     try: 
         clf.connect(llcp={'on-startup': startup, 'on-connect': connected})
         clf.close()
-        print 'Disconnect'
+        print '%sDisconnect' % tstamp('INFO')
+        print '%sNext Frame...\n\n\n' % tstamp('INFO')
         time.sleep(0.5)
     except:
+        print '%sException caught' % tstamp('WARNING')
         tries = tries + 1
         time.sleep(2)
         retry = True
 
-print "waiting"
+print "%sWaiting" % tstamp('INFO')
 while len(q) > 0:
     time.sleep(2)
-    print len(q)
+    print "%s Queue len: %d" % (tstamp('INFO'), len(q))
 
 done = True
