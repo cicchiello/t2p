@@ -41,7 +41,6 @@ class PrintMgr(threading.Thread):
 
                 print "%sSetting comm on %s" % (tstamp('INFO'),PRINTER)
                 stat = subprocess.call(["stty", "-F", PRINTER, "9600", "parenb", "-parodd", "cs7"])
-                print "%sStat: %s" % (tstamp('INFO'), stat)
 
                 dev = os.open(PRINTER, os.O_WRONLY)
                 os.write(dev, file.read())
@@ -97,7 +96,10 @@ print "%sBefore while loop" % tstamp('DEBUG')
 while retry and (tries < 3):
     retry = False
     try: 
-        clf.connect(llcp={'on-startup': startup, 'on-connect': connected})
+        clf.connect(llcp={'on-startup': startup, \
+                          'on-connect': connected, \
+                          'role': 'initiator' \
+        })
         clf.close()
         print '%sDisconnect' % tstamp('INFO')
         print '%sNext Frame...\n\n\n' % tstamp('INFO')

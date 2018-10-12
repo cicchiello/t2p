@@ -2,53 +2,82 @@
 
 user=`whoami`
 
-echo "INFO|$(date +'%F %R.%S')|t2p.bsh running as ${user}" >> /home/pi/t2p.log 2>&1
+# only do any network related stuff if the following is set to "1"
+useNetIfAvailable=0
+
 cd /home/pi/t2p
+
+echo "INFO|$(date +'%F %R.%S')|t2p.bsh running as ${user}" >> /home/pi/t2p.log 2>&1
 echo "INFO|$(date +'%F %R.%S')|pwd: $(pwd)" >> /home/pi/t2p.log 2>&1
 
-echo "INFO|$(date +'%F %R.%S')|Sleeping for 30s while services initialize" >> /home/pi/t2p.log 2>&1
-# Note: 15s wasn't enough; with 15s, the wget a few lines down actually takes minutes to determine the file's not there
-sleep 30
+echo "INFO|$(date +'%F %R.%S')|Sleeping for 15s while services initialize" >> /home/pi/t2p.log 2>&1
+sleep 15
 
-echo "INFO|$(date +'%F %R.%S')|Checking for update file..." >> /home/pi/t2p.log 2>&1
-update_url="https://github.com/cicchiello/t2p/raw/master/update_0.10.bsh"
-wget --directory-prefix=/home/pi ${update_url} >> /home/pi/t2p.log 2>&1
 
-if [ -f "/home/pi/update_0.10.bsh" ]
+# even if useNetIfAvailable, the device still may not be setup for networking -- so start by saying "0", then test
+netIsAvailable=0
+
+if [ "${useNetIfAvailable}" = "1" ]
+then
+    netIsAvailable=$(ping -c 1 -W 5 8.8.8.8 | grep transmitted | awk '{print $4}')
+fi
+
+currVersion="0.9"
+nextVersion="0.10"
+
+if [ "${netIsAvailable}" = "1" ]
+then
+    #Note: occassionally, if the wget below is attempted too soon, it takes several minutes to return!?!?
+    #... so let's wait a little longer
+    sleep 15
+    
+    echo "INFO|$(date +'%F %R.%S')|Checking for update file..." >> /home/pi/t2p.log 2>&1
+    update_url="https://github.com/cicchiello/t2p/raw/master/update_${nextVersion}.bsh"
+    wget --directory-prefix=/home/pi ${update_url} >> /home/pi/t2p.log 2>&1
+fi
+
+if [ -f "/home/pi/update_${nextVersion}.bsh" ]
 then
     echo "INFO|$(date +'%F %R.%S')|Update file found; executing it, then rebooting" >> /home/pi/t2p.log 2>&1
-    chmod a+x /home/pi/update_0.10.bsh
-    /home/pi/update_0.10.bsh >> /home/pi/t2p.log 2>&1 
+    chmod a+x /home/pi/update_${nextVersion}.bsh
+    /home/pi/update_${nextVersion}.bsh >> /home/pi/t2p.log 2>&1 
 else
     echo "INFO|$(date +'%F %R.%S')|No update file found" >> /home/pi/t2p.log 2>&1
 
-    if [ ! -f "/home/pi/first_run_0.9" ]
+    # if networking, send a log file home
+    if [ "${netIsAvailable}" = "1" ]
     then
-	echo "To: j.cicchiello@ieee.org" > /tmp/boot_email.txt
-	echo "From: jcicchiello@ptd.net" >> /tmp/boot_email.txt
-	echo "Subject: t2p/t2p.bsh version 0.9 has been started for the first time!" >> /tmp/boot_email.txt
-	echo "" >> /tmp/boot_email.txt
-	echo $(date) >> /tmp/boot_email.txt
-	echo "" >> /tmp/boot_email.txt
-	ssmtp j.cicchiello@gmail.com < /tmp/boot_email.txt
+	if [ ! -f "/home/pi/first_run_${currVersion}" ]
+	then
+	    echo "To: j.cicchiello@ieee.org" > /tmp/boot_email.txt
+	    echo "From: jcicchiello@ptd.net" >> /tmp/boot_email.txt
+	    echo "Subject: t2p/t2p.bsh version ${currVersion} has been started for the first time!" >> /tmp/boot_email.txt
+	    echo "" >> /tmp/boot_email.txt
+	    echo $(date) >> /tmp/boot_email.txt
+	    echo "" >> /tmp/boot_email.txt
+	    ssmtp j.cicchiello@gmail.com < /tmp/boot_email.txt
 
-	touch /home/pi/first_run_0.9
-	echo "INFO|$(date +'%F %R.%S')|Sent inital start email message" >> /home/pi/t2p.log 2>&1
-    else
-	echo "To: j.cicchiello@ieee.org" > /home/pi/log_email.txt
-	echo "From: jcicchiello@ptd.net" >> /home/pi/log_email.txt
-	echo "Subject: t2p.log to date" >> /home/pi/log_email.txt
-	echo "" >> /home/pi/log_email.txt
-	echo $(date) >> /home/pi/log_email.txt
-	echo "" >> /home/pi/log_email.txt
-	echo "*******/home/pi/t2p.log contents to date:" >> /home/pi/log_email.txt
-	cat /home/pi/t2p.log >> /home/pi/log_email.txt
-	echo "*******end of /home/pi/t2p.log" >> /home/pi/log_email.txt
-	echo "" >> /home/pi/log_email.txt
-	echo "" >> /home/pi/log_email.txt
-	ssmtp j.cicchiello@gmail.com < /home/pi/log_email.txt
+	    touch /home/pi/first_run_${currVersion}
+	    echo "INFO|$(date +'%F %R.%S')|Sent inital start email message" >> /home/pi/t2p.log 2>&1
+	else
+	    echo "To: j.cicchiello@ieee.org" > /home/pi/log_email.txt
+	    echo "From: jcicchiello@ptd.net" >> /home/pi/log_email.txt
+	    echo "Subject: t2p.log to date" >> /home/pi/log_email.txt
+	    echo "" >> /home/pi/log_email.txt
+	    echo $(date) >> /home/pi/log_email.txt
+	    echo "" >> /home/pi/log_email.txt
+	    echo "*******/home/pi/t2p.log contents to date:" >> /home/pi/log_email.txt
+	    cat /home/pi/t2p.log >> /home/pi/log_email.txt
+	    echo "*******end of /home/pi/t2p.log" >> /home/pi/log_email.txt
+	    echo "" >> /home/pi/log_email.txt
+	    echo "" >> /home/pi/log_email.txt
+	    ssmtp j.cicchiello@gmail.com < /home/pi/log_email.txt
 	
-	echo "INFO|$(date +'%F %R.%S')|/home/pi/log_email.txt emailed" >> /home/pi/t2p.log 2>&1
+	    echo "INFO|$(date +'%F %R.%S')|/home/pi/log_email.txt emailed" >> /home/pi/t2p.log 2>&1
+	fi
+    else
+	echo "INFO|$(date +'%F %R.%S')|Since networking is unavailable or disabled, no log email is being sent" \
+	     >> /home/pi/t2p.log 2>&1
     fi
 fi
 
