@@ -1,0 +1,92 @@
+#!/bin/bash
+
+user=`whoami`
+if [ "$user" != "root" ]
+then
+    echo 'Sorry, this shell script must be run as root; perhaps you meant to use "sudo"?'
+    exit
+fi
+
+dir=$(dirname $0)
+log=/home/pi/install.log
+echo "" &>> ${log}
+chown pi:pi ${log}
+
+
+echo "" &>> ${log}
+echo "New install invocation" &>> ${log}
+echo "Everything being logged to screen and file ${log}"
+echo "Everything being logged to screen and file ${log}" &>> ${log}
+date &>> ${log}
+
+
+echo ""
+echo "Performing apt update"
+echo "Performing apt update" &>> ${log}
+apt-get update &>> ${log}
+
+echo ""
+echo "Performing apt upgrade"
+echo "Performing apt upgrade" &>> ${log}
+apt-get -y upgrade &>> ${log}
+
+echo ""
+echo "Installing cups"
+echo "Installing cups" &>> ${log}
+apt-get install -y cups &>> ${log}
+
+
+echo ""
+echo "Installing lpr"
+echo "Installing lpr" &>> ${log}
+apt-get install -y lpr &>> ${log}
+
+
+echo ""
+echo "Adding user pi to group lpadmin"
+echo "Adding user pi to group lpadmin" &>> ${log}
+usermod -a -G lpadmin pi &>> ${log}
+
+
+echo ""
+echo "Configuring CUPs"
+if [ ! -f "/etc/cups/cupsd.conf.pristine" ]
+then
+   cp /etc/cups/cupsd.conf /etc/cups/cupsd.conf.pristine
+fi
+
+cat /etc/cups/cupsd.conf.pristine \
+   | sed 's/Listen localhost:631/Port 631/g' \
+   | sed 's?</Location>?  Allow @local\'$'\n</Location>?g' \
+   > /etc/cups/cupsd.conf
+
+#iptables -A INPUT -i wlan0 -p tcp -m tcp --dport 631 -j ACCEPT
+#iptables -A INPUT -i wlan0 -p udp -m udp --dport 631 -j ACCEPT
+
+echo ""
+echo "Restarting CUPs"
+/etc/init.d/cups restart &>> ${log}
+
+echo "Done install_worker.bsh" &>> ${log}
+date &>> ${log}
+
+
+echo "Setups Done!"
+echo ""
+echo "After the following reboot, access the CUPS administration app on any browser on the same LAN"
+echo "After the following reboot, access the CUPS administration app on any browser on the same LAN" &>> ${log}
+echo "It will be available at url(s):"
+echo "It will be available at url(s):" &>> ${log}
+for f in $(ifconfig | grep netmask | grep -v "127.0.0" | awk '{print $2}')
+do
+    echo "http://${f}:631"
+    echo "http://${f}:631" &>> ${log}
+done
+
+
+echo "Done installation" &>> ${log}
+date &>> ${log}
+
+echo ""
+echo "INFO: Rebooting..."
+reboot now

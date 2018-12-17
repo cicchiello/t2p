@@ -21,6 +21,7 @@ do
 done
 #echo "after GID: ${gid}"
 newname="t2p_${gid}"
+pswd="mypassword"
 if [ "t2p_${gid}" != "$(hostname)" ]
 then
     echo ""
@@ -28,9 +29,9 @@ then
     echo "Setting hostname to: t2p_${gid}" &>> ${log}
     ${dir}/sethostname.bsh "t2p_${gid}" &>> ${log}
 
-    echo "Setting password to: hanelinus"
-    echo "Setting password to: hanelinus" &>> ${log}
-    echo -e "hanelinus\nhanelinus" | passwd pi &>> ${log}
+    echo "Setting password to: ${pswd}"
+    echo "Setting password to: ${pswd}" &>> ${log}
+    echo -e "${pswd}\n${pswd}" | passwd pi &>> ${log}
 fi
 
 
@@ -68,19 +69,21 @@ echo "Adding user pi to group lpadmin" &>> ${log}
 usermod -a -G lpadmin pi &>> ${log}
 
 
+hostname="HANELINUS"
+wifipswd="mypassword"
 if [ ! -f "/etc/wpa_supplicant/wpa_supplicant.conf.pristine" ]
 then
     echo ""
     echo ""
     echo "Setting up WiFi connectivity for administration access"
     echo "For future reference, please note:"
-    echo "   SSID: HANELINUS"
-    echo "   password: 0123456789"
+    echo "   SSID: ${hostname}"
+    echo "   password: ${wifipswd}"
     echo "" &>> ${log}
     echo "Setting up WiFi connectivity for administration access" &>> ${log}
     echo "For future reference, please note:" &>> ${log}
-    echo "   SSID: HANELINUS" &>> ${log}
-    echo "   password: 0123456789" &>> ${log}
+    echo "   SSID: ${hostname}" &>> ${log}
+    echo "   password: ${wifipswd}" &>> ${log}
     echo "" &>> ${log}
     cp /etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf.pristine
     cp ${dir}/etc/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
